@@ -19,11 +19,7 @@ variance = np.var(demand, ddof=1)
 print("Mean:", mean)
 print("Variance:", variance)
 
-# r is the number of successes
-r = (mean ** 2) / (variance - mean)
-
-# p is the probability
-p = r / (r + mean)
+r,p = np.load("./results/parameter.npy")
 
 print("r =", r)
 print("p =", p)

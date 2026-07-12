@@ -1,7 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import nbinom
 
 train = pd.read_csv("./data/train.csv")
 
@@ -41,64 +40,4 @@ p = r / (r + mean)
 print("r =", r)
 print("p =", p)
 
-simulation = nbinom.rvs(r, p, size=10000)
-
-counts = demand.value_counts().sort_index()
-
-plt.figure(figsize=(10,5))
-plt.bar(counts.index, counts.values/len(demand))
-
-plt.xlabel("Orders")
-plt.ylabel("Probability")
-plt.title("Actual Demand Distribution")
-
-plt.show()
-
-actual = demand.value_counts().sort_index() / len(demand)
-
-sim = pd.Series(simulation).value_counts().sort_index() / len(simulation)
-
-plt.figure(figsize=(10,5))
-
-plt.bar(actual.index, actual.values, alpha=0.6, label="Actual demand")
-
-plt.plot(sim.index, sim.values, color="red", linewidth=2, label="Negative Binomial model")
-
-plt.xlabel("Orders")
-plt.ylabel("Probability")
-plt.title("Actual vs Modelled Demand")
-plt.legend()
-
-plt.show()
-
-results = []
-
-for supply in range(5, 60):
-    waste = np.maximum(supply - simulation, 0)
-    shortage = np.maximum(simulation - supply, 0)
-
-    cost = np.mean(waste) + 5 * np.mean(shortage)
-
-    results.append([supply, cost])
-
-results = np.array(results)
-
-best_index = np.argmin(results[:, 1])
-
-best_supply = results[best_index, 0]
-best_cost = results[best_index, 1]
-
-print("Optimal supply:", best_supply)
-print("Minimum expected cost:", best_cost)
-
-plt.figure(figsize=(10,5))
-
-plt.plot(results[:,0], results[:,1])
-
-plt.xlabel("Supply Level")
-plt.ylabel("Expected Cost")
-plt.title("Optimising Food Supply")
-
-plt.grid(True)
-
-plt.show()
+np.save("./results/parameters.npy", [r,p])
